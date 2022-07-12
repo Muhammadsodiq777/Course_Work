@@ -12,7 +12,7 @@ namespace HotelListing.Service
     {
         private readonly UserManager<ApiUser> _userManager;
         private readonly IConfiguration _configuration;
-        private  ApiUser _user;
+        private ApiUser _user;
 
         public AuthManager(UserManager<ApiUser> userManager, IConfiguration configuration)
         {
@@ -23,8 +23,8 @@ namespace HotelListing.Service
         public async Task<string> CreateToken()
         {
             var signingCredentials = GetSigningCredentials();
-                 var claims = await GetClaims();
-            var token = GenerateTokenOptions(signingCredentials, claims); 
+            var claims = await GetClaims();
+            var token = GenerateTokenOptions(signingCredentials, claims);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -37,8 +37,8 @@ namespace HotelListing.Service
             var exp = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("lifetime").Value));
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings.GetSection("validIssuer").Value,
-                claims:claims,
+                issuer: jwtSettings.GetSection("ValidIssuer").Value,
+                claims: claims,
                 //expires: DateTime.UtcNow.AddMinutes(expiryMins),
                 expires: exp,
                 signingCredentials: signingCredentials
@@ -71,7 +71,7 @@ namespace HotelListing.Service
         }
 
         public async Task<bool> ValidateUser(LoginUserDTO userDTO)
-        { 
+        {
             _user = await _userManager.FindByNameAsync(userDTO.Email);
             return (_user != null && await _userManager.CheckPasswordAsync(_user, userDTO.Password));
         }

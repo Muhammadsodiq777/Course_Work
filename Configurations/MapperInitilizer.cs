@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
 using HotelListing.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace HotelListing.Configurations
 {
@@ -8,11 +9,10 @@ namespace HotelListing.Configurations
     {
         public MapperInitilizer()
         {
-            CreateMap<Country, CountryDTO>().ReverseMap();
-            CreateMap<Country, CreateCountryDTO>().ReverseMap();
-            CreateMap<Hotel, HotelDTO>().ReverseMap();  
-            CreateMap<Hotel,CreateHotelDTO>().ReverseMap();
+            CreateMap<Collection, CollectionDTO>().ReverseMap();
+            CreateMap<Collection, CreateCollectionDTO>().ReverseMap();
             CreateMap<ApiUser,UserDTO>().ReverseMap();
+
         }
     }
 }

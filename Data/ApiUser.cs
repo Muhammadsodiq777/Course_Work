@@ -5,7 +5,6 @@ namespace HotelListing.Data;
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
-
-    public bool UserStatus { get; set; } = true;
+   // public bool UserStatus { get; set; } = true;
 }
 

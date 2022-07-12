@@ -16,7 +16,7 @@ public class UserConfigs : IEntityTypeConfiguration<ApiUser>
                 UserName = "_jack",
                 PasswordHash = "Password123",
                 Email = "jackjoe@gmail.com",
-                UserStatus = true
+               /// UserStatus = true
             },
             new ApiUser
             {
@@ -25,7 +25,7 @@ public class UserConfigs : IEntityTypeConfiguration<ApiUser>
                 UserName = "_broun",
                 PasswordHash= "Password123",
                 Email = "brouns@gmail.com",
-                UserStatus = true
+               // UserStatus = true
             },
             new ApiUser
             {
@@ -34,7 +34,7 @@ public class UserConfigs : IEntityTypeConfiguration<ApiUser>
                 UserName = "SuperUser",
                 PasswordHash = "Guest123",
                 Email = "noEmail@gmail.com",
-                UserStatus = true,
+               /// UserStatus = true,
             }
 
             );

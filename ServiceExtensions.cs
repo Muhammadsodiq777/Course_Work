@@ -11,6 +11,8 @@ using HotelListing.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using AspNetCoreRateLimit;
+using Microsoft.Identity.Web;
+
 
 namespace HotelListing;
 
@@ -29,11 +31,6 @@ public static class ServiceExtensions
     /// configuring the jwt web token
     public static void ConfigureJWT(this IServiceCollection services, IConfiguration Configuration)
     {
-        //IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        //// Duplicate here any configuration sources you use.
-        //configurationBuilder.AddJsonFile("AppSettings.json");
-        //IConfiguration Configuration = configurationBuilder.Build();
-
         var jwtSettings = Configuration.GetSection("Jwt");
 
         var key = Environment.GetEnvironmentVariable("KEY");
@@ -42,15 +39,18 @@ public static class ServiceExtensions
         {
             o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-            .AddJwtBearer(o =>
+          .AddJwtBearer(o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.GetSection("Issuer").Value,
+                    //ValidIssuer = jwtSettings.GetSection("Issuer").Value,
+                    ValidAudience = Configuration["Jwt: ValidAudience"],
+                    ValidIssuer = Configuration["Jwt:ValidIssuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
                 };
             });
@@ -116,7 +116,7 @@ public static class ServiceExtensions
     }
 
     // Configuration of the rate limit
-    public static void ConfigureRateLimiting( this IServiceCollection service)
+    public static void ConfigureRateLimiting(this IServiceCollection service)
     {
         var rateLimitRules = new List<RateLimitRule>
         {

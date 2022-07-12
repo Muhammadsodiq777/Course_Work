@@ -24,6 +24,12 @@ namespace HotelListing.Repository
             _db.Remove(entity);
         }
 
+        public async Task Delete<U>(U id)
+        {
+            var entity = await _db.FindAsync(id);
+            _db.Remove(entity);
+        }
+
         public void DeleteRange(IEnumerable<T> entities)
         {
             _db.RemoveRange(entities);
@@ -44,7 +50,6 @@ namespace HotelListing.Repository
             return await query.AsNoTracking()
                               .FirstOrDefaultAsync(expression);
         }
-
         public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>> expression = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderby = null, List<string> includes = null)
         {

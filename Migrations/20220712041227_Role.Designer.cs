@@ -4,6 +4,7 @@ using HotelListing.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelListing.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220712041227_Role")]
+    partial class Role
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,17 +97,13 @@ namespace HotelListing.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("HotelListing.Data.Collection", b =>
+            modelBuilder.Entity("HotelListing.Data.Country", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -115,18 +113,32 @@ namespace HotelListing.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("Countries");
 
-                    b.ToTable("Collections");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Uzbekistan",
+                            ShortName = "UZB"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "Saudi Arabia",
+                            ShortName = "SA"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Turkey",
+                            ShortName = "TK"
+                        });
                 });
 
-            modelBuilder.Entity("HotelListing.Data.FilesEntity", b =>
+            modelBuilder.Entity("HotelListing.Data.Hotel", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,25 +146,51 @@ namespace HotelListing.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<long>("CollectionId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("FileURL")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OriginalName")
+                    b.Property<long>("CountryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("Size")
-                        .HasColumnType("bigint");
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CollectionId");
+                    b.HasIndex("CountryId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Hotels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Address = "Amir Temur square",
+                            CountryId = 1L,
+                            Name = "Uzbekistan Hotel",
+                            Rating = 4.0
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Address = "SA",
+                            CountryId = 2L,
+                            Name = "Golden Hotel",
+                            Rating = 5.0
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Address = "TK",
+                            CountryId = 3L,
+                            Name = "Effendi Hotel",
+                            Rating = 5.0
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -184,22 +222,22 @@ namespace HotelListing.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "47393c7e-2da6-4842-8fad-916f8dc85df8",
-                            ConcurrencyStamp = "c4c6c340-4266-418f-b661-bfc6bf050658",
+                            Id = "92dc5a1f-5539-4aae-9cdf-2378762698aa",
+                            ConcurrencyStamp = "d3feb500-46e2-4e16-bc7b-f60b7a515dd4",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "50c6e72b-c8f1-4e1e-86ee-4b545c49e434",
-                            ConcurrencyStamp = "bb41b345-b084-4379-8b6b-f9f76858b8f0",
+                            Id = "7704ee39-a659-4a59-b3d7-ddd0749ca392",
+                            ConcurrencyStamp = "e763ce94-b1db-46ce-b0e3-f61f1969d955",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "71618bf6-9b46-419d-bc10-9a3b9f4c616c",
-                            ConcurrencyStamp = "c4be38ec-51c0-40a1-ad30-55c7bb2c100d",
+                            Id = "3815d9a4-a8ac-4aa6-a278-441ce44a2511",
+                            ConcurrencyStamp = "1fc22f8a-dbc8-47d4-8e39-8099a75aefa7",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -311,26 +349,15 @@ namespace HotelListing.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("HotelListing.Data.Collection", b =>
+            modelBuilder.Entity("HotelListing.Data.Hotel", b =>
                 {
-                    b.HasOne("HotelListing.Data.ApiUser", "ApiUser")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("HotelListing.Data.Country", "Country")
+                        .WithMany("Hotels")
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ApiUser");
-                });
-
-            modelBuilder.Entity("HotelListing.Data.FilesEntity", b =>
-                {
-                    b.HasOne("HotelListing.Data.Collection", "Collection")
-                        .WithMany()
-                        .HasForeignKey("CollectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Collection");
+                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -382,6 +409,11 @@ namespace HotelListing.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HotelListing.Data.Country", b =>
+                {
+                    b.Navigation("Hotels");
                 });
 #pragma warning restore 612, 618
         }

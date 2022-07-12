@@ -22,6 +22,6 @@ public class CountryV2Controller : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllCountries()
     {
-        return Ok(_database.Countries);
+        return Ok(_database.Collections);
     }
 }

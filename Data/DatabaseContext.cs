@@ -9,19 +9,15 @@ namespace HotelListing.Data
         public DatabaseContext(DbContextOptions options) : base(options)
         { }
 
-        public DbSet<Country> Countries { get; set; }
+        public DbSet<Collection> Collections { get; set; }
 
-        public DbSet<Hotel> Hotels { get; set; }
+        public DbSet<FilesEntity> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);  
 
             builder.ApplyConfiguration(new RoleConfiguration());
-            
-            builder.ApplyConfiguration(new CountryConfiguration());
-            
-            builder.ApplyConfiguration(new HotelConfiguration());
         }
     }
 }

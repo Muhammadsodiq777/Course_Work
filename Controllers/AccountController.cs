@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
 using HotelListing.Data;
+using HotelListing.IRepository;
 using HotelListing.Models;
 using HotelListing.Service;
-using Microsoft.AspNetCore.Http;
+using Demo_Project.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelListing.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -16,29 +17,41 @@ namespace HotelListing.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly IMapper _mapper;
         private readonly IAuthManager _authManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         public AccountController(UserManager<ApiUser> userManager,
             ILogger<AccountController> logger, IMapper mapper,
-            IAuthManager auth)
+            IAuthManager auth, IUnitOfWork unitOfWork
+            )
         {
             _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
             _authManager = auth;
+            _unitOfWork = unitOfWork;
         }
+
+
         [HttpPost]
         [Route("register")]
 
         public async Task<IActionResult> Register([FromBody] UserDTO userDTO)
-        {
-            _logger.LogInformation($"Registration Attempt for {userDTO.Email}");
+         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation($"Invalid Registration Attempt for {userDTO.Email}");
                 return BadRequest(ModelState);
             }
 
+            var userExist = await _userManager.FindByNameAsync(userDTO.Email);
+            if (userExist != null)
+            {
+                return BadRequest(userExist + " Already exist user");
+            }
             var user = _mapper.Map<ApiUser>(userDTO);
             user.UserName = userDTO.Email;
+            user.SecurityStamp = Guid.NewGuid().ToString();
+
             var result = await _userManager.CreateAsync(user, userDTO.Password);
 
             if (!result.Succeeded)
@@ -49,11 +62,10 @@ namespace HotelListing.Controllers
                 }
                 return BadRequest("User Registration Attemp Failed");
             }
-            await _userManager.AddToRolesAsync(user, userDTO.Roles);
 
             return Accepted();
         }
-
+ 
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserDTO userDTO)
@@ -61,6 +73,7 @@ namespace HotelListing.Controllers
             _logger.LogInformation($"Login Attempt for {userDTO.Email}");
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation($"Invalid Login Attempt for {userDTO.Email}");
                 return BadRequest(ModelState);
             }
 
@@ -70,6 +83,19 @@ namespace HotelListing.Controllers
             }
 
             return Accepted(new { Token = await _authManager.CreateToken() });
+        }
+
+        //[Authorize(Roles = "SuperAdmin")]
+        //[Authorize(Roles = "Admin")]
+        [HttpGet("api/account/users")]
+        [ResponseCache(CacheProfileName = "SecondsDuration")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAllUsers([FromQuery] RequestParams requestParams)
+        {
+            var users = await _unitOfWork.ApiUsers.GetAllPaged(requestParams);
+            var results = _mapper.Map<IList<UserDTO>>(users);
+            return Ok(results);
         }
     }
 }

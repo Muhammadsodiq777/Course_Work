@@ -14,12 +14,19 @@ namespace HotelListing.Models
     }
     public class UserDTO : LoginUserDTO
     {
+        [Required(ErrorMessage = "Name is required")]
         public string FirstName { get; set; }
+
+        [Required(ErrorMessage = "LastName is required")]
+
         public string LastName { get; set; }
 
         [DataType(DataType.PhoneNumber)]
         public string PhoneNumber { get; set; }
+    }
 
-        public ICollection<string> Roles { get; set; }  
+    public class UpdateUserDTO : UserDTO
+    {
+
     }
 }

@@ -22,6 +22,8 @@ namespace HotelListing.IRepository
 
         Task Delete(long id);
 
+        Task Delete<U>(U id);
+
         void DeleteRange(IEnumerable<T> entities);
 
         void Update(T entity);

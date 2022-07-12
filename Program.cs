@@ -7,8 +7,10 @@ using HotelListing.Repository;
 using HotelListing.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
 using Serilog;
-using Serilog.Events;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +26,10 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
         });
 });
-
+ 
+///<summary>
+/// Configure the Serilog Logger
+/// </summary>
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -38,10 +43,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 builder.Services.AddAutoMapper(typeof(MapperInitilizer));
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddIdentity<ApiUser, IdentityRole>()
+    .AddEntityFrameworkStores<DatabaseContext>()
+    .AddDefaultTokenProviders();
 
+// google oath
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = Configuration["Google:ClientId"];
+    googleOptions.ClientSecret = Configuration["Google:ClientSecrets"];
+});
 
 /// declare global cahshing in controllers using program.cs
 builder.Services.AddControllers(config =>
